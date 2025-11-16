@@ -40,16 +40,9 @@ public class Equipment {
     @Column(name = "warranty_expiry")
     private LocalDate warrantyExpiry;
 
-    @Column(name = "location")
-    private String location;
-
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private EquipmentStatus status;
-
-
-    @Column(name = "maintenance_schedule")
-    private LocalDate maintenanceSchedule;
 
     @Column(name = "last_maintenance")
     private LocalDate lastMaintenance;
