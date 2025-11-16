@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Getter
@@ -31,7 +32,15 @@ public class Room {
     @Column(name = "available_in")
     private LocalDateTime availableIn;
 
+    @Column(name = "room_type")
+    @Enumerated(EnumType.STRING)
+    private RoomType roomType;
+
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
     private RoomStatus status;
+
+    @OneToMany
+    @JoinColumn(name  = "equipment_id")
+    List<Equipment> equipments;
 }

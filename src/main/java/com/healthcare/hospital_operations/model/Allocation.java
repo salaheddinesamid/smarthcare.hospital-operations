@@ -17,7 +17,7 @@ public class Allocation {
     private Long allocationId;
 
     @Column(name = "patient_id")
-    private Long patientId;
+    private Integer patientId;
 
     @ManyToOne
     @JoinColumn(name = "room_id")
@@ -31,4 +31,11 @@ public class Allocation {
 
     @Column(name = "priority")
     private AllocationPriority priority;
+
+    @Column(name = "issue")
+    private String issue;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private AllocationStatus status;
 }

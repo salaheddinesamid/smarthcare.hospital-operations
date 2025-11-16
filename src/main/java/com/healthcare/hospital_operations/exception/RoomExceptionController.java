@@ -21,4 +21,14 @@ public class RoomExceptionController {
                                 Map.of("message",String.format("%s%s","The room is already in the system: ", ex.getMessage()))
                         );
     }
+
+    @ExceptionHandler(RoomUnavailableException.class)
+    public ResponseEntity<?> handleUnavailableRoom(
+            RoomUnavailableException ex
+    ){
+        return
+                ResponseEntity
+                        .status(409)
+                        .body(Map.of("message",String.format("%s%s","The room is already in the use: ", ex.getMessage())));
+    }
 }
