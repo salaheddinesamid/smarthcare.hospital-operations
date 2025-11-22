@@ -2,6 +2,7 @@ package com.healthcare.hospital_operations.service.implementation;
 
 import com.healthcare.hospital_operations.dto.EquipmentRequestDto;
 import com.healthcare.hospital_operations.model.Equipment;
+import com.healthcare.hospital_operations.model.EquipmentCondition;
 import com.healthcare.hospital_operations.repository.EquipmentRepository;
 import com.healthcare.hospital_operations.service.EquipmentMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,9 +27,17 @@ public class EquipmentMapperImpl implements EquipmentMapper {
     public Equipment mapToEquipment(EquipmentRequestDto requestDto) {
         // validate request:
         validate(requestDto);
-
         // set attributes:
         Equipment equipment = new Equipment();
-        equipment/
+        equipment.setName(requestDto.getEquipmentName());
+        equipment.setCondition(EquipmentCondition.valueOf(requestDto.getCondition()));
+        equipment.setLastMaintenance(requestDto.getLastMaintenance());
+        equipment.setManufacturer(requestDto.getManufacturer());
+        equipment.setPurchaseDate(requestDto.getPurchaseDate());
+        equipment.setModelNumber(requestDto.getModelNumber());
+        equipment.setWarrantyExpiry(requestDto.getWarrantyExpiry());
+
+        // return equipment object:
+        return equipment;
     }
 }

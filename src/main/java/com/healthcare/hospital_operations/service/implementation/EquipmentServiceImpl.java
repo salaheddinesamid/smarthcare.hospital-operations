@@ -2,31 +2,25 @@ package com.healthcare.hospital_operations.service.implementation;
 
 import com.healthcare.hospital_operations.dto.EquipmentRequestDto;
 import com.healthcare.hospital_operations.dto.EquipmentResponseDto;
-import com.healthcare.hospital_operations.exception.EquipmentAlreadyExistsException;
 import com.healthcare.hospital_operations.model.Equipment;
-import com.healthcare.hospital_operations.repository.EquipmentRepository;
 import com.healthcare.hospital_operations.service.EquipmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class EquipmentServiceImpl implements EquipmentService {
-
-    private final EquipmentRepository equipmentRepository;
+    private final DefaultEquipmentAdderServiceImpl defaultEquipmentAdderService;
 
     @Autowired
-    public EquipmentServiceImpl(EquipmentRepository equipmentRepository) {
-        this.equipmentRepository = equipmentRepository;
+    public EquipmentServiceImpl(DefaultEquipmentAdderServiceImpl defaultEquipmentAdderService) {
+        this.defaultEquipmentAdderService = defaultEquipmentAdderService;
     }
 
     @Override
     public EquipmentResponseDto newEquipment(EquipmentRequestDto requestDto) {
-        // check equipment existence:
-        if(equipmentRepository.existsBySerialNumber(requestDto.getSerialNumber())){
-            throw new EquipmentAlreadyExistsException(requestDto.getSerialNumber());
-        }
-
-        // Otherwise, add new equipment:
-        Equipment equipment = new Equipment();
+        // Act:
+        Equipment equipment = defaultEquipmentAdderService.add(requestDto);
+        // Return a response dto for the saved equipment
+        return new EquipmentResponseDto(equipment);
     }
 }

@@ -8,7 +8,7 @@ import java.time.LocalDate;
 public class EquipmentRequestDto {
 
     private String equipmentName;
-    private String number;
+    private String modelNumber;
     private String manufacturer;
     private String serialNumber;
     private LocalDate purchaseDate;
