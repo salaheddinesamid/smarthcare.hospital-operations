@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/room")
+@RequestMapping("/api/v1/room-management")
 public class RoomController {
 
     private final RoomServiceImpl roomService;
@@ -22,8 +22,7 @@ public class RoomController {
     }
 
     @GetMapping("get-matches")
-    public ResponseEntity<?> getBestRoomMatches(@RequestParam String disease,
-                                                @RequestParam LocalDateTime availability, @RequestParam String priority){
+    public ResponseEntity<?> getBestRoomMatches(@RequestParam String disease, @RequestParam LocalDateTime availability, @RequestParam String priority){
         return null;
     }
 

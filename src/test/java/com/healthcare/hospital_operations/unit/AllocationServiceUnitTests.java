@@ -7,5 +7,4 @@ public class AllocationServiceUnitTests {
     @Test
     void testRequestAllocationSuccess(){}
 
-
 }

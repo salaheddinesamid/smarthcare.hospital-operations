@@ -14,13 +14,13 @@ public class AllocationRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long allocationRequest;
+    private Long requestId;
 
     @Column(name = "patient_id")
     private Long patientId;
 
     @Column(name = "request_date")
-    private LocalDateTime localDateTime;
+    private LocalDateTime requestDate;
 
     @Column(name = "priority")
     private AllocationPriority allocationPriority;
