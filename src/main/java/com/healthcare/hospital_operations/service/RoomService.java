@@ -10,5 +10,5 @@ public interface RoomService {
      * @param requestDto
      * @return
      */
-    RoomResponseDto newRoom(NewRoomRequestDto requestDto);
+    RoomResponseDto newRoom(String type, NewRoomRequestDto requestDto);
 }

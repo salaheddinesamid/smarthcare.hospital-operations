@@ -5,7 +5,10 @@ import com.healthcare.hospital_operations.dto.RoomResponseDto;
 import com.healthcare.hospital_operations.exception.RoomAlreadyExistsException;
 import com.healthcare.hospital_operations.model.Room;
 import com.healthcare.hospital_operations.model.RoomStatus;
+import com.healthcare.hospital_operations.model.RoomType;
+import com.healthcare.hospital_operations.repository.EquipmentRepository;
 import com.healthcare.hospital_operations.repository.RoomRepository;
+import com.healthcare.hospital_operations.service.implementation.DefaultRoomAdderImpl;
 import com.healthcare.hospital_operations.service.implementation.RoomServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -15,6 +18,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -24,12 +28,36 @@ class RoomServiceUnitTest {
     @Mock
     private RoomRepository roomRepository;
 
+    @Mock
+    private EquipmentRepository equipmentRepository;
+
+    @InjectMocks
+    private DefaultRoomAdderImpl defaultRoomAdder;
+
     @InjectMocks
     private RoomServiceImpl roomService;
 
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+    }
+
+    @Test
+    void testAddGeneralRoomSuccess(){
+        // Arrange request:
+        NewRoomRequestDto requestDto = new NewRoomRequestDto();
+        requestDto.setCapacity(2);
+        requestDto.setEquipments(List.of());
+        requestDto.setFloorNumber(4);
+        requestDto.setRoomNumber(203);
+        requestDto.setRoomType("GENERAL");
+
+        when(roomRepository.existsByRoomNumberAndFloorNumber(4,203)).thenReturn(false);
+        when(equipmentRepository.findAllById(requestDto.getEquipments())).thenReturn(List.of());
+        // Act:
+        defaultRoomAdder.add("GENERAL",requestDto);
+        // Verify:
+        verify(roomRepository, times(1)).save(any());
     }
 
     @Test
@@ -44,7 +72,7 @@ class RoomServiceUnitTest {
 
         // Act + Assert
         RoomAlreadyExistsException exception =
-                assertThrows(RoomAlreadyExistsException.class, () -> roomService.newRoom(requestDto));
+                assertThrows(RoomAlreadyExistsException.class, () -> roomService.newRoom("GENERAL",requestDto));
 
         assertEquals("2", exception.getMessage());
         verify(roomRepository, never()).save(any(Room.class));
@@ -79,7 +107,7 @@ class RoomServiceUnitTest {
         when(roomRepository.save(any(Room.class))).thenReturn(savedRoom);
 
         // Act
-        RoomResponseDto response = roomService.newRoom(requestDto);
+        RoomResponseDto response = roomService.newRoom("GENERAL",requestDto);
 
         // Assert
         assertNotNull(response);

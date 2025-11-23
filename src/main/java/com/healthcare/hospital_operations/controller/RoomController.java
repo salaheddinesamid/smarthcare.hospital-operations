@@ -39,10 +39,8 @@ public class RoomController {
     }
 
     @PostMapping("new")
-    public ResponseEntity<?> addNewRoom(@RequestBody NewRoomRequestDto requestDto){
-        RoomResponseDto response = roomService.newRoom(
-                requestDto
-        );
+    public ResponseEntity<?> addNewRoom(@RequestParam String roomType ,@RequestBody NewRoomRequestDto requestDto){
+        RoomResponseDto response = roomService.newRoom(roomType, requestDto);
         return ResponseEntity
                 .status(200)
                 .body(Map.of(

@@ -1,9 +1,11 @@
 package com.healthcare.hospital_operations.dto;
 
+import com.healthcare.hospital_operations.model.Equipment;
 import com.healthcare.hospital_operations.model.Room;
 import lombok.Data;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class RoomResponseDto {
@@ -15,6 +17,7 @@ public class RoomResponseDto {
     private Integer availablePlaces;
     private String status;
     private LocalDateTime availableIn;
+    private List<Equipment> equipments;
 
     public RoomResponseDto(Room room){
         this.roomId = room.getRoomId();
@@ -24,5 +27,6 @@ public class RoomResponseDto {
         this.availablePlaces = room.getAvailablePlaces();
         this.status = room.getStatus().toString();
         this.availableIn = room.getAvailableIn();
+        this.equipments = room.getEquipments();
     }
 }
