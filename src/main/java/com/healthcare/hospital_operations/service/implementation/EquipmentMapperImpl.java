@@ -30,7 +30,7 @@ public class EquipmentMapperImpl implements EquipmentMapper {
         // set attributes:
         Equipment equipment = new Equipment();
         equipment.setName(requestDto.getEquipmentName());
-        equipment.setCondition(EquipmentCondition.valueOf(requestDto.getCondition()));
+        equipment.setEquipmentCondition(EquipmentCondition.valueOf(requestDto.getCondition()));
         equipment.setLastMaintenance(requestDto.getLastMaintenance());
         equipment.setManufacturer(requestDto.getManufacturer());
         equipment.setPurchaseDate(requestDto.getPurchaseDate());

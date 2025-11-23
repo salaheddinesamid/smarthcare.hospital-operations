@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @Setter
-@Table(name = "equipments")
 public class Equipment {
 
     @Id
@@ -18,11 +17,11 @@ public class Equipment {
     @Column(name = "equipment_id")
     private Long equipmentId;
 
-    @Column(name = "name")
+    @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "type")
     @Enumerated(EnumType.STRING)
+    @Column(name = "type")
     private EquipmentType type;
 
     @Column(name = "model_number")
@@ -31,7 +30,7 @@ public class Equipment {
     @Column(name = "manufacturer")
     private String manufacturer;
 
-    @Column(name = "serial _number",unique = true)
+    @Column(name = "serial_number", unique = false) // FIXED
     private String serialNumber;
 
     @Column(name = "purchase_date")
@@ -40,8 +39,8 @@ public class Equipment {
     @Column(name = "warranty_expiry")
     private LocalDate warrantyExpiry;
 
-    @Column(name = "status")
     @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private EquipmentStatus status;
 
     @Column(name = "last_maintenance")
@@ -50,11 +49,13 @@ public class Equipment {
     @Column(name = "next_maintenance")
     private LocalDate nextMaintenance;
 
-    @Column(name = "condition")
     @Enumerated(EnumType.STRING)
-    private EquipmentCondition condition;
+    private EquipmentCondition equipmentCondition;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "room_id")  // FK stored in Equipment table
+    private Room room;
 }

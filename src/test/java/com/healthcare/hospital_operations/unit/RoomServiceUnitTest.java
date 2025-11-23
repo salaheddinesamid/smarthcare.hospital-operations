@@ -5,7 +5,6 @@ import com.healthcare.hospital_operations.dto.RoomResponseDto;
 import com.healthcare.hospital_operations.exception.RoomAlreadyExistsException;
 import com.healthcare.hospital_operations.model.Room;
 import com.healthcare.hospital_operations.model.RoomStatus;
-import com.healthcare.hospital_operations.model.RoomType;
 import com.healthcare.hospital_operations.repository.EquipmentRepository;
 import com.healthcare.hospital_operations.repository.RoomRepository;
 import com.healthcare.hospital_operations.service.implementation.DefaultRoomAdderImpl;

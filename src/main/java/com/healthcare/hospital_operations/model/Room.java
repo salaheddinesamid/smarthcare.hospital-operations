@@ -10,17 +10,17 @@ import java.util.List;
 @Entity
 @Getter
 @Setter
-@Table(name = "rooms")
 public class Room {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "room_id")
     private Long roomId;
 
-    @Column(name = "room_number")
+    @Column(name = "room_number", nullable = false)
     private Integer roomNumber;
 
-    @Column(name = "floor_number")
+    @Column(name = "floor_number", nullable = false)
     private Integer floorNumber;
 
     @Column(name = "capacity")
@@ -32,15 +32,14 @@ public class Room {
     @Column(name = "available_in")
     private LocalDateTime availableIn;
 
-    @Column(name = "room_type")
     @Enumerated(EnumType.STRING)
+    @Column(name = "room_type")
     private RoomType roomType;
 
-    @Column(name = "status")
     @Enumerated(EnumType.STRING)
+    @Column(name = "status")
     private RoomStatus status;
 
-    @OneToMany
-    @JoinColumn(name  = "equipment_id")
-    List<Equipment> equipments;
+    @OneToMany(mappedBy = "room", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Equipment> equipments;
 }
