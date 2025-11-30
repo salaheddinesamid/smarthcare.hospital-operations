@@ -3,8 +3,6 @@ package com.healthcare.hospital_operations.service.implementation;
 import com.healthcare.hospital_operations.dto.RoomMatchResponse;
 import com.healthcare.hospital_operations.model.AllocationRequest;
 import com.healthcare.hospital_operations.model.Room;
-import com.healthcare.hospital_operations.model.RoomStatus;
-import com.healthcare.hospital_operations.model.RoomType;
 import com.healthcare.hospital_operations.repository.RoomRepository;
 import com.healthcare.hospital_operations.service.RoomMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,7 +43,6 @@ public class DefaultRoomMatcherImpl implements RoomMatcher {
             RoomMatchResponse roomMatchResponse = new RoomMatchResponse(
                     roomScores.get(k),k
             );
-
             matchResponse.add(roomMatchResponse);
         }
 
@@ -60,7 +57,6 @@ public class DefaultRoomMatcherImpl implements RoomMatcher {
             case IN_MAINTENANCE ->
                 score += 10;
         }
-
         return score;
     }
 }
