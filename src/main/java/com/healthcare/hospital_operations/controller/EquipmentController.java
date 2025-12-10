@@ -5,10 +5,9 @@ import com.healthcare.hospital_operations.dto.EquipmentResponseDto;
 import com.healthcare.hospital_operations.service.implementation.EquipmentServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/equipments")
@@ -19,6 +18,13 @@ public class EquipmentController {
     @Autowired
     public EquipmentController(EquipmentServiceImpl equipmentService) {
         this.equipmentService = equipmentService;
+    }
+
+    @GetMapping("/get_all")
+    public ResponseEntity<?> getAll(){
+        List<EquipmentResponseDto> response = equipmentService.getAllEquipments();
+        return ResponseEntity.status(200)
+                .body(response);
     }
 
     @PostMapping("new")

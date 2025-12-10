@@ -3,6 +3,8 @@ package com.healthcare.hospital_operations.service;
 import com.healthcare.hospital_operations.dto.EquipmentRequestDto;
 import com.healthcare.hospital_operations.dto.EquipmentResponseDto;
 
+import java.util.List;
+
 public interface EquipmentService {
 
     /**
@@ -11,4 +13,10 @@ public interface EquipmentService {
      * @return equipment details
      */
     EquipmentResponseDto newEquipment(EquipmentRequestDto requestDto);
+
+    /**
+     * This method returns all equipments in the system.
+     * @return
+     */
+    List<EquipmentResponseDto> getAllEquipments();
 }

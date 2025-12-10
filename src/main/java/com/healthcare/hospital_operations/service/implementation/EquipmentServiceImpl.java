@@ -7,13 +7,17 @@ import com.healthcare.hospital_operations.service.EquipmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class EquipmentServiceImpl implements EquipmentService {
     private final DefaultEquipmentAdderServiceImpl defaultEquipmentAdderService;
+    private final EquipmentQueryServiceImpl equipmentQueryService;
 
     @Autowired
-    public EquipmentServiceImpl(DefaultEquipmentAdderServiceImpl defaultEquipmentAdderService) {
+    public EquipmentServiceImpl(DefaultEquipmentAdderServiceImpl defaultEquipmentAdderService, EquipmentQueryServiceImpl equipmentQueryService) {
         this.defaultEquipmentAdderService = defaultEquipmentAdderService;
+        this.equipmentQueryService = equipmentQueryService;
     }
 
     @Override
@@ -22,5 +26,10 @@ public class EquipmentServiceImpl implements EquipmentService {
         Equipment equipment = defaultEquipmentAdderService.add(requestDto);
         // Return a response dto for the saved equipment
         return new EquipmentResponseDto(equipment);
+    }
+
+    @Override
+    public List<EquipmentResponseDto> getAllEquipments() {
+        return equipmentQueryService.getAll();
     }
 }
