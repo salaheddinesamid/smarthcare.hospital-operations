@@ -17,10 +17,16 @@ public class AllocationRequest {
     private Long requestId;
 
     @Column(name = "patient_id")
-    private Long patientId;
+    private Integer patientId;
 
     @Column(name = "request_date")
     private LocalDateTime requestDate;
+
+    @Column(name = "from_date")
+    private LocalDateTime from;
+
+    @Column(name = "to_date")
+    private LocalDateTime to;
 
     @Column(name = "priority")
     private AllocationPriority allocationPriority;

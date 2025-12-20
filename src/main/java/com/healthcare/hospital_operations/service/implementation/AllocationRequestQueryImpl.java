@@ -17,7 +17,6 @@ public class AllocationRequestQueryImpl implements AllocationRequestQuery {
 
     @Override
     public List<AllocationRequest> getAllRequests() {
-        List<AllocationRequest> requests = allocationRequestRepository.findAll();
-        return null;
+        return allocationRequestRepository.findAll();
     }
 }
