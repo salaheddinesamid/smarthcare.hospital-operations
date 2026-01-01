@@ -20,8 +20,8 @@ permissions: # the allowed permissions
   contents: read
 
 env: # env variables
-  ACR_NAME: ${{ env.ACR_NAME }}
-  IMAGE_NAME: ${{ env.IMAGE_NAME }}
+  ACR_NAME: ${{ vars.ACR_NAME }}
+  IMAGE_NAME: ${{ vars.IMAGE_NAME }}
 
 jobs:
   # ------------------------
