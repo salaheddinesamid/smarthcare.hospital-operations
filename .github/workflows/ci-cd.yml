@@ -64,8 +64,8 @@ jobs:
       - name: Build & Push Docker Image # build the Docker image and push it to ACR
         run: |
           TAG=${{ github.sha }}
-          docker build -t $ACR_NAME.azurecr.io/$IMAGE_NAME:$TAG app
-          docker push $ACR_NAME.azurecr.io/$IMAGE_NAME:$TAG
+          docker build -t ${{ vars.ACR_LOGIN_SERVER }}.azurecr.io/${{ vars.IMAGE_NAME }}:${{ github.sha }}
+          docker push ${{ vars.ACR_LOGIN_SERVER }}.azurecr.io/${{ vars.IMAGE_NAME }}:${{ github.sha }}
   
 
   # ------------------------
