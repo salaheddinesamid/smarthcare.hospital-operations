@@ -16,14 +16,7 @@ on:
 
 jobs:
 
-  static-code-analysis:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@main
-
-      - name: Run Codacy Analysis CLI
-        uses: codacy/codacy-analysis-cli-action@master
+  # Build executable code
   build:
     runs-on: ubuntu-latest
     steps:
@@ -37,6 +30,7 @@ jobs:
 
     - name: Build with Maven
       run: ./mvnw clean package
+  # Run unit and Integration tests
   test:
     runs-on: ubuntu-latest
     steps:
@@ -49,3 +43,19 @@ jobs:
 
       - name: Test with Maven
         run: ./mvnw clean test
+
+  #Azure Login
+  azure-login:
+
+  # Build docker image
+  build-docker-image:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: azure/login@v1
+      - name: Azure Login
+        with:
+          creds: ${{secrets.AZURE_CREDENTIALS}}
+      - uses: actions/checkout@v4
+      - name: Build Docker Image and Push to ACR
+        run: docker build -t ${{env.ACR_NAME}}/${{env.IMAGE_NAME}}:${{ github.sha }} .
+             docker push ${{env.ACR_NAME}}/${{env.IMAGE_NAME}}:${{ github.sha }}

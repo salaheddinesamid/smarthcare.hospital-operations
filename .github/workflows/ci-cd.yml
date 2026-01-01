@@ -1,0 +1,122 @@
+# This workflow will build a Java project with Maven, and cache/restore any dependencies to improve the workflow execution time
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-maven
+
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: CI CD Pipeline for Hospital Operations System
+
+on: # triggers when push to develop
+  push:
+    branches: [ develop, release, main]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions: # the allowed permissions
+  id-token: write
+  contents: read
+
+env: # env variables
+  ACR_NAME: ${{ env.ACR_NAME }}
+  IMAGE_NAME: ${{ env.IMAGE_NAME }}
+
+jobs:
+  # ------------------------
+  # 1️⃣ BUILD & TEST: here the entire project is built into an executable program (using Maven) and tested.
+  # ------------------------
+  build-test:
+    runs-on: ubuntu-latest # set up the OS
+    if: github.ref == 'refs/head/develop'
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin # JDK version
+          java-version: 17 # Java Version
+
+      - name: Build & Test
+        run: mvn clean package
+
+  # ------------------------
+  # 2️⃣ BUILD & PUSH IMAGE: after successfully build and test the code, the Docker image needs to be built and pushed into an ACR
+  # ------------------------
+  docker-build:
+    runs-on: ubuntu-latest
+    needs: build-test # depends on the code built and tested from the previous job
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Azure Login (OIDC) # login to Azure Portal
+        uses: azure/login@v2
+        with: # Azure credentials
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Login to ACR # Login to ACR
+        run: az acr login --name ${{ vars.ACR_LOGIN_SERVER }}
+
+      - name: Build & Push Docker Image # build the Docker image and push it to ACR
+        run: |
+          TAG=${{ github.sha }}
+          docker build -t $ACR_NAME.azurecr.io/$IMAGE_NAME:$TAG app
+          docker push $ACR_NAME.azurecr.io/$IMAGE_NAME:$TAG
+  
+
+  # ------------------------
+  # 4️⃣ DEPLOY STAGING: after pushing the image into
+  # ------------------------
+  deploy-staging:
+    runs-on: ubuntu-latest
+    needs: docker-build
+    if: github.ref == 'refs/heads/release'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }} # Azure Client ID
+          tenant-id: ${{ vars.AZURE_TENANT_ID }} # Azure Tenant ID
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }} # Subscription ID
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Apply (STAGING) # Here the terraform apply changes in the staging environment
+        run: |
+          cd infra/envs/staging
+          terraform init
+          terraform apply -auto-approve \
+            -var="image_tag=${{ github.sha }}"
+
+  # ------------------------
+  # 5️⃣ DEPLOY PROD (MANUAL)
+  # ------------------------
+  deploy-prod:
+    runs-on: ubuntu-latest
+    needs: deploy-staging
+    if: github.ref == 'refs/heads/main'
+    environment: production
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Apply (PROD)
+        run: |
+          cd infra/envs/prod
+          terraform init
+          terraform apply -auto-approve \
+            -var="image_tag=${{ github.sha }}"
