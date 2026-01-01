@@ -55,11 +55,11 @@ jobs:
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
       - name: Login to ACR
-        run: az acr login --name $ACR_LOGIN_SERVER
+        run: az acr login --name ${{ vars.ACR_LOGIN_SERVER }}
 
       - name: Build & Push Docker Image
         run: |
-          FULL_IMAGE_NAME=$ACR_LOGIN_SERVER.azurecr.io/$IMAGE_NAME:${{ github.sha }}
+          FULL_IMAGE_NAME=${{ vars.ACR_LOGIN_SERVER }}.azurecr.io/${{ vars.IMAGE_NAME }}:${{ github.sha }}
           docker build -t $FULL_IMAGE_NAME .
           docker push $FULL_IMAGE_NAME
 
