@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: hospital-operations-deployment-staging
+  labels:
+    app: hospital-operations-deployment-staging
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: hospital-operations-deployment-staging
+  template:
+    metadata:
+      name: hospital-operations-deployment-staging
+      labels:
+        app: hospital-operations-deployment-staging
+    spec:
+      containers:
+        - name: hospital-operations-deployment-staging
+          env:
+            - name: ENV_PROFILE
+              value: staging
+          image: nginx
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 80
+              protocol: TCP
+      restartPolicy: Always
+      

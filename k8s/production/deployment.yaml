@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: hospital-operations-deployment-prod
+  labels:
+    role: hospital-operations-deployment-prod
+spec:
+  containers:
+    - name: hospital-operations-deployment-prod
+      env:
+        - name: ENV_PROFILE
+          value: prod
+      image: nginx
+      imagePullPolicy: IfNotPresent
+      ports:
+        - name: hospital-operations-deployment-prod
+          containerPort: 80
+          protocol: TCP
+  restartPolicy: Always
+  

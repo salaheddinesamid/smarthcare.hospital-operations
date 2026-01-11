@@ -7,4 +7,4 @@ COPY target/hospital-operations-0.0.1-SNAPSHOT.jar hospital-operations-0.0.1-SNA
 
 EXPOSE 7866
 
-ENTRYPOINT ["java", "-jar", "hospital-operations-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "hospital-operations-0.0.1-SNAPSHOT.jar","--spring.profiles.active=${ENV_PROFILE}"]
