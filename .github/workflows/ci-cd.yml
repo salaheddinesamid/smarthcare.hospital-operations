@@ -50,7 +50,7 @@ jobs:
             -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
             -Dsonar.organization=${{ vars.SONAR_ORGANIZATION }}
             -Dsonar.host.url=https://sonarcloud.io
-
+            -Dsonar.java.binaries=target/classes
       # Upload the Software Artifact
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
