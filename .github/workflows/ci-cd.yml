@@ -62,23 +62,22 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-test
     environment: staging
-    if: github.event_name =='push '
+    if: contains(fromJSON('["refs/heads/develop", "refs/heads/release", "refs/heads/main"]'), github.ref)
     steps:
       - uses: actions/checkout@v4
-
       - name: Download JAR artifact
         uses: actions/download-artifact@v4
         with:
           name: hospital-jar
           path: target
-
+      # Login to Azure
       - name: Azure Login (OIDC)
         uses: azure/login@v2
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
-
+      # Login to ACR
       - name: Login to ACR
         run: az acr login --name ${{ vars.ACR_LOGIN_SERVER }}
       # Build the Docker Image
@@ -95,7 +94,6 @@ jobs:
       # Push the Image to ACR
       - name: Push Image to ACR
         run: docker push ${{ vars.ACR_LOGIN_SERVER }}/${{ vars.IMAGE_NAME }}:${{ github.sha }}
-
 
   # Job 3: Deploy to staging environment
   deploy-staging:
