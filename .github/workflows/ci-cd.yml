@@ -16,14 +16,11 @@ env:
   IMAGE_NAME: ${{ vars.IMAGE_NAME }}
 
 jobs:
-  # -------------------------------------------------------------------------
-  # 1️⃣ BUILD & TEST: Runs on all branches to ensure code quality
-  # -------------------------------------------------------------------------
+  # Job 1: Build and Test source code with Maven
   build-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
@@ -33,18 +30,23 @@ jobs:
 
       - name: Build & Test with Maven
         run: mvn clean package
-
+      # Static code Analysis using SonarCloud
+      - name: SonarCloud Scan
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: mvn sonar:sonar -Dsonar.projectKey=${{ secrets.SONAR_PROJECT_KEY }}
+      # Upload the Software Artifact
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
         with:
           name: hospital-jar
           path: target/*.jar
+  # Job 2: Build and Push Docker Image
   docker-build:
     runs-on: ubuntu-latest
     needs: build-test
     environment: staging
-    if: contains(fromJSON('["refs/heads/develop", "refs/heads/release", "refs/heads/main"]'), github.ref)
-
+    if: github.event_name =='push '
     steps:
       - uses: actions/checkout@v4
 
@@ -63,23 +65,28 @@ jobs:
 
       - name: Login to ACR
         run: az acr login --name ${{ vars.ACR_LOGIN_SERVER }}
+      # Build the Docker Image
+      - name: Build Docker Image
+        run: docker build -t ${{ vars.ACR_LOGIN_SERVER }}/${{ vars.IMAGE_NAME }}:${{ github.sha }}
+      # Scan the built Docker Image against vulnerabilities
+      - name: Scan Image for vulnerabilities using (Trivy)
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: '${{ vars.ACR_LOGIN_SERVER }}/${{ vars.IMAGE_NAME }}:${{ github.sha }}'
+          format: 'table'
+          exit-code: '1'
+          severity: 'CRITICAL,HIGH'
+      # Push the Image to ACR
+      - name: Push Image to ACR
+        run: docker push ${{ vars.ACR_LOGIN_SERVER }}/${{ vars.IMAGE_NAME }}:${{ github.sha }}
 
-      - name: Build & Push Docker Image
-        run: |
-          FULL_IMAGE_NAME=${{ vars.ACR_LOGIN_SERVER }}/${{ vars.IMAGE_NAME }}:${{ github.sha }}
-          docker build -t $FULL_IMAGE_NAME .
-          docker push $FULL_IMAGE_NAME
 
-
-  # -------------------------------------------------------------------------
-  # 3️⃣ DEPLOY STAGING: Triggered when pushing to the 'release' branch
-  # -------------------------------------------------------------------------
+  # Job 3: Deploy to staging environment
   deploy-staging:
     runs-on: ubuntu-latest
     needs: docker-build
     if: github.ref == 'refs/heads/release'
     environment: staging
-
     steps:
       - uses: actions/checkout@v4
 
@@ -90,17 +97,7 @@ jobs:
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
           subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
 
-      - uses: hashicorp/setup-terraform@v3
-
-      - name: Terraform Apply (STAGING)
-        run: |
-          cd infra/envs/staging
-          terraform init
-          terraform apply -auto-approve -var="image_tag=${{ github.sha }}"
-
-  # -------------------------------------------------------------------------
-  # 4️⃣ DEPLOY PROD: Triggered when pushing to the 'main' branch
-  # -------------------------------------------------------------------------
+  # Job 4: Deploy to production environment with Manual Approval Gate
   deploy-prod:
     runs-on: ubuntu-latest
     needs: docker-build # Changed from deploy-staging to allow direct fixes to main if needed
